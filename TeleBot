@@ -1,0 +1,46 @@
+import requests
+import telebot
+import pyowm
+from telebot.types import Message
+
+token = "990483237:AAHV_NWo_rl3dhuM0HgXpzLDQQZ-7p_dZm8"
+bot = telebot.TeleBot(token)
+main_url = f'https://api.telegram.org/bot{token}'
+
+answer = {                                  #
+    'chat_id':287656148,                    # Данные, которы мы хотим отправить, chat_id - id нашего пользователя, берем из test_json
+    'text': 'Wake up, Neo'                  #
+}                                           #
+
+test = requests.get(f'{main_url}/getMe')    #основная информация
+test1 = requests.get(f'{main_url}/getUpdates')  #получаение обновлений с последнего запроса
+#test2 = requests.get(f'{main_url}/sendMessage', data=answer)    # отправка данных
+#print(test2.json())
+
+@bot.message_handler(commands=['start','help'])
+def command_handler(message: Message):
+    bot.reply_to(message, 'Poka chto nichego netu =(')
+
+@bot.message_handler(commands=['weather'])
+def weather_1(message: Message):
+    owm = pyowm.OWM('1586c818dc67d8e6a6f3db038ae3cbae')
+    weather = owm.weather_at_place('Владивосток')
+    w = weather.get_weather()
+    desc = w.get_detailed_status()
+    temperature = w.get_temperature('celsius')['temp']
+    hum = w.get_humidity()
+    wind = w.get_wind()['speed']
+    clearSky = u'\U00002600'
+    rain = u'\U00002614'
+    bot.send_message(message.chat.id, 'Сейчас во Владивостоке: ' + str(desc) + clearSky +'\n' +
+                     'температура: ' + str(temperature) + ' С' + '\n' + 'влажность: '
+                     + str(hum) + ' % ' + rain + '\n' + 'скорость ветра: ' + str(wind) + 'м\с.')
+
+@bot.message_handler(content_types=['text'])      #  реагирует только на текст
+def echo_digits(message: Message):                #
+    if 'Првивет' or 'Hello' in message.text:      # если в тексте найдено слово, выводит ответ
+        bot.reply_to(message, 'Hello')            #
+        return                                    #
+    #bot.reply_to(message, str(random.random()))# рандомное число от 0 до 1
+
+bot.polling(timeout=4)  # задержка 4 сек.
