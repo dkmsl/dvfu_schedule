@@ -38,7 +38,7 @@ def weather_1(message: Message):
 
 @bot.message_handler(content_types=['text'])      #  реагирует только на текст
 def echo_digits(message: Message):                #
-    if 'Првивет' or 'Hello' in message.text:      # если в тексте найдено слово, выводит ответ
+    if 'Привет' or 'Hello' in message.text:      # если в тексте найдено слово, выводит ответ
         bot.reply_to(message, 'Hello')            #
         return                                    #
     #bot.reply_to(message, str(random.random()))# рандомное число от 0 до 1
